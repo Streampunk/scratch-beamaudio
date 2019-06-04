@@ -1,0 +1,22 @@
+{
+  "name": "beamaudio",
+  "version": "0.0.1",
+  "description": "Scratch audio mixer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint **/*.js",
+    "lint-html": "eslint **/*.js -f html -o ./reports/lint-results.html",
+    "lint-fix": "eslint --fix **/*.js"
+ },
+  "author": "Streampunk Media",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "beamcoder": "^0.3.1",
+    "naudiodon": "^2.0.3",
+    "osc": "^2.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  }
+}
