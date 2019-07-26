@@ -17,7 +17,16 @@ const portAudio = require('naudiodon');
 const beamcoder = require('beamcoder');
 const oscServer = require('./oscServer.js');
 
-// Create an instance of AudioIO with outOptions, which will return a WritableStream
+// const ai = new portAudio.AudioIO({
+//   inOptions: {
+//     highwaterMark: 1024,
+//     channelCount: 2,
+//     sampleFormat: portAudio.SampleFormat16Bit,
+//     sampleRate: 48000,
+//     deviceId: 1
+//   }
+// });
+
 const ao = new portAudio.AudioIO({
   outOptions: {
     highwaterMark: 1024,
@@ -96,17 +105,29 @@ const oscControls = {
   }
 };
 
+// const fs = require('fs');
 async function run() {
+  // const demuxers = beamcoder.demuxers();
+  // const iformat = demuxers[Object.keys(demuxers).find(k => demuxers[k].name === 's16le')];
   const urls = [ 'file:../../Media/sound/BBCNewsCountdown.wav' ];
-  const spec = { start: 50, end: 58 };
+  // const urls = [ 'file:../../Media/Another-Day-Another-Beat.wav' ];
+  // const rs = fs.createReadStream(urls[0]);
+  const spec = { start: 0, end: 50 };
   var tag = 0;
   const params = {
     video: [],
     audio: [
       {
-        sources: [
-          { url: urls[0], ms: spec, streamIndex: 0 }
-        ],
+        sources: [{
+          url: urls[0],
+          // input_stream: ai,
+          // iformat: iformat,
+          // options: {
+          //   sample_rate: 48000, channels: 2, probesize: 32,
+          //   avioflags: 'direct', packetsize: 1024, fflags: 'nobuffer' },
+          ms: spec,
+          streamIndex: 0 
+        }],
         filterSpec: `[in0:a] \
                      volume@${tag++}=precision=fixed:volume=1.0, \
                      agate@${tag++}=attack=20:release=2000, \
@@ -121,15 +142,26 @@ async function run() {
               sample_rate: 48000, format: 's16le', channel_layout: 'stereo'
             }
           }
+          // { name: 'aac', time_base: [1, 90000],
+          //   codecpar: {
+          //     sample_rate: 48000, format: 'fltp', channel_layout: 'stereo'
+          //   }
+          // }
         ]
       },
     ],
     out: {
-      formatName: 'data',
-      output_stream: ao
+      // url: 'file:temp.mp4',
+      // formatName: 'mp4',
+      formatName: 's16le',
+      output_stream: ao,
+      flags: { DIRECT: true },
+      options: { flags: { AVFMT_NOFILE: true }, fflags: 'flush_packets' }
     }
   };
 
+  // ai.once('data', () => ao.start());
+  // ai.start();
   await beamcoder.makeSources(params);
   const beamStreams = await beamcoder.makeStreams(params);
 
@@ -168,15 +200,16 @@ async function run() {
       }
     });
     p.filter.cb = pts => {
+      // if (global.gc) global.gc();
       const ts = pts * stream.time_base[0] / stream.time_base[1];
       filterCallbacks.forEach(c => {
         if (c.mod())
           c.filt.priv = c.msg(ts);
       });
-    }
+    };
   });
 
-  ao.start();
+  setTimeout(ao.start, 200);
   await beamStreams.run();
   oscServ.close();
 }
