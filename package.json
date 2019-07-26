@@ -1,6 +1,6 @@
 {
   "name": "beamaudio",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Scratch audio mixer",
   "main": "index.js",
   "scripts": {
@@ -16,8 +16,8 @@
   "author": "Streampunk Media",
   "license": "Apache-2.0",
   "dependencies": {
-    "beamcoder": "^0.3.1",
-    "naudiodon": "^2.0.3",
+    "beamcoder": "^0.3.4",
+    "naudiodon": "^2.1.0",
     "osc": "^2.3.1"
   },
   "devDependencies": {
