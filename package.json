@@ -17,8 +17,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "beamcoder": "^0.3.4",
-    "naudiodon": "^2.1.0",
-    "osc": "^2.3.1"
+    "naudiodon": "^2.1.2",
+    "osc": "^2.4.1"
   },
   "devDependencies": {
     "eslint": "^5.16.0"
